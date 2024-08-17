@@ -4,10 +4,8 @@ import { BsCheckCircle } from "react-icons/bs";
 import { AiFillYoutube } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 import YouTube from "react-youtube";
-import { collection, doc, getDoc, getDocs, orderBy, query } from "firebase/firestore";
 //import { auth, firestore } from "@/firebase/firebase";
 import { DBProblem } from "@/utils/types/problem";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 type ProblemsTableProps = {
 	setLoadingProblems: React.Dispatch<React.SetStateAction<boolean>>;
@@ -123,19 +121,11 @@ function useGetProblems(setLoadingProblems: React.Dispatch<React.SetStateAction<
 			// fetching data logic
 			setLoadingProblems(true);
 			const response = await fetch("http://localhost:4000/problems/getAll");
-			
-			// const q = query(collection(firestore, "problems"), orderBy("order", "asc"));
 			if(response.ok){
 				const data: DBProblem[] = await response.json();
 				setProblems(data);
 			}
-			
-			// const querySnapshot = await getDocs(data);
-			// const tmp: DBProblem[] = [];
-			// querySnapshot.forEach((doc) => {
-			// 	tmp.push({ id: doc.id, ...doc.data() } as DBProblem);
-			// });
-			//setProblems(tmp);
+		
 			setLoadingProblems(false);
 		};
 
@@ -146,7 +136,6 @@ function useGetProblems(setLoadingProblems: React.Dispatch<React.SetStateAction<
 
 function useGetSolvedProblems() {
 	const [solvedProblems, setSolvedProblems] = useState<string[]>([]);
-	// const [user] = useAuthState(auth);
 	const [user, setUset] = useState("");
 
 	useEffect(() => {

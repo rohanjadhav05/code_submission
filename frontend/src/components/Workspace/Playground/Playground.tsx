@@ -1,21 +1,12 @@
 import { useState, useEffect } from "react";
 import PreferenceNav from "./PreferenceNav/PreferenceNav";
 import Split from "react-split";
-import CodeMirror from "@uiw/react-codemirror";
 import EditorFooter from "./EditorFooter";
 import { Problem } from "@/utils/types/problem";
-import { useAuthState } from "react-firebase-hooks/auth";
-//import { auth, firestore } from "@/firebase/firebase";
-import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { java } from '@codemirror/lang-java';
-import { basicSetup } from '@codemirror/basic-setup';
 import MonacoEditor from "@monaco-editor/react";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/theme-github";
+
 
 type PlaygroundProps = {
 	problem: Problem;
@@ -30,7 +21,6 @@ export interface ISettings {
 }
 
 const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved }) => {
-	const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
 	let [userCode, setUserCode] = useState<string>(problem.starterCode?.Java);
 
 	const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
@@ -41,20 +31,12 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 		dropdownIsOpen: false,
 	});
 
-	const user = "";//useAuthState(auth);
+	const user = "";
 	const {
 		query: { pid },
 	} = useRouter();
 
 	const handleSubmit = async () => {
-		// if (!user) {
-		// 	toast.error("Please login to submit your code", {
-		// 		position: "top-center",
-		// 		autoClose: 3000,
-		// 		theme: "dark",
-		// 	});
-		// 	return;
-		// }
 		try {
 			console.log("user edit code : "+userCode);
 			fetch('http://localhost:4000/problems/userRun',{
@@ -74,48 +56,8 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 			.catch(err => {
 				console.error('Error : ',err);
 			})
-			// userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName));
-			// const cb = new Function(`return ${userCode}`)();
-			// const handler = problems[pid as string].handlerFunction;
-
-			// if (typeof handler === "function") {
-			// 	const success = handler(cb);
-			// 	if (success) {
-			// 		toast.success("Congrats! All tests passed!", {
-			// 			position: "top-center",
-			// 			autoClose: 3000,
-			// 			theme: "dark",
-			// 		});
-			// 		setSuccess(true);
-			// 		setTimeout(() => {
-			// 			setSuccess(false);
-			// 		}, 4000);
-
-			// 		//const userRef = doc(firestore, "users", user.uid);
-			// 		// await updateDoc(userRef, {
-			// 		// 	solvedProblems: arrayUnion(pid),
-			// 		// });
-			// 		setSolved(true);
-			// 	}
-			// }
 		} catch (error: any) {
 			console.log("inside the catch");
-			// console.log(error.message);
-			// if (
-			// 	error.message.startsWith("AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:")
-			// ) {
-			// 	toast.error("Oops! One or more test cases failed", {
-			// 		position: "top-center",
-			// 		autoClose: 3000,
-			// 		theme: "dark",
-			// 	});
-			// } else {
-			// 	toast.error(error.message, {
-			// 		position: "top-center",
-			// 		autoClose: 3000,
-			// 		theme: "dark",
-			// 	});
-			// }
 		}
 	};
 
@@ -145,15 +87,7 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 					onChange={onChange}
 					theme="vs-dark"
 					/>
-					 {/* <AceEditor
-						mode="java"
-						theme="dark"
-						name="editor"
-						editorProps={{ $blockScrolling: true }}
-						value={userCode}
-						onChange={(newValue) => setUserCode(newValue)}
-						setOptions={{ fontSize: settings.fontSize }}
-					  /> */}
+
 				</div>
 				<div className='w-full px-5 overflow-auto'>
 					{/* testcase heading */}
@@ -164,24 +98,9 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 						</div>
 					</div>
 
+					{/* hita TestCases dakycha ahet */}
 					<div className='flex'>
-						{/* { {problem.examples.map((example, index) => (
-							<div
-								className='mr-2 items-start mt-2 '
-								key={example.id}
-								onClick={() => setActiveTestCaseId(index)}
-							>
-								<div className='flex flex-wrap items-center gap-y-4'>
-									<div
-										className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer whitespace-nowrap
-										${activeTestCaseId === index ? "text-white" : "text-gray-500"}
-									`}
-									>
-										Case {index + 1}
-									</div>
-								</div>
-							</div>
-						))} } */}
+						
 					</div>
 
 					<div className='font-semibold my-4'>

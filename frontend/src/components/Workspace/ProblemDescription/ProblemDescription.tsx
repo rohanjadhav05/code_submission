@@ -21,10 +21,14 @@ type ProblemDescriptionProps = {
 const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solved }) => {
 	const [problemDifficultyClass, setProblemDifficultyClass ] = useState("");
 	const [loading, setLoading ] = useState(false);
-	const topicArray = problem.topic.split(',').map(topic => topic.trim());
+	const topic = problem?.topic;
+	let topicArray = null;
+	if (topic){
+		topicArray = problem.topic.split(',').map(topic => topic.trim());
+	}
 	const user = "";//useAuthState(auth);
 	//const { currentProblem, loading, problemDifficultyClass, setCurrentProblem } = useGetCurrentProblem(problem.id);
-	const { liked, disliked, solved, setData, starred } = useGetUsersDataOnProblem(problem.id);
+	//const { liked, disliked, solved, setData, starred } = useGetUsersDataOnProblem(problem.id);
 	const [updating, setUpdating] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -43,14 +47,6 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solve
 
 	const toggleOpen = () => {
 		setIsOpen(prev => !prev);
-	};
-
-	const returnUserDataAndProblemData = async (transaction: any) => {
-		//const userRef = doc(firestore, "users", user!.uid);
-		//const problemRef = doc(firestore, "problems", problem.id);
-		// const userDoc = await transaction.get(userRef);
-		// const problemDoc = await transaction.get(problemRef);
-		// return { userDoc, problemDoc, userRef, problemRef };
 	};
 
 	const handleLike = async () => {
@@ -207,11 +203,11 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solve
 								</a>
 	
 
-								{(solved || _solved) && (
+								{/* {(solved || _solved) && (
 									<div className='rounded p-[3px] ml-4 text-lg transition-colors duration-200 text-green-s text-dark-green-s'>
 										<BsCheck2Circle />
 									</div>
-								)}
+								)} */}
 								{/* <div
 									className='flex items-center cursor-pointer hover:bg-dark-fill-3 space-x-1 rounded p-[3px]  ml-4 text-lg transition-colors duration-200 text-dark-gray-6'
 									onClick={handleLike}
@@ -317,7 +313,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solve
 								<div className="flex flex-wrap gap-2 mt-2">
 									<div className="ml-4">
 									</div>
-								{topicArray.map((topic, index) => (
+								{topicArray && topicArray.map((topic, index) => (
 									<div
 									key={index}
 									className="inline-block px-2.5 py-1 space-x-1 bg-gray-400 bg-opacity-[.15] text-white text-xs font-medium rounded-[21px] mt-1 mb-1"
