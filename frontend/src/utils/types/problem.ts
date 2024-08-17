@@ -19,6 +19,7 @@ export type Problem = {
 	handlerFunction: ((fn: any) => boolean) | string;
 	starterFunctionName: string;
 	topic : string;
+	codeId : number;
 };
 
 export type DBProblem = {

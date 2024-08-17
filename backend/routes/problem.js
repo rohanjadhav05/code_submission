@@ -25,7 +25,8 @@ router.get('/getProblemById/:id', (req, res) => {
                              p.constraints,
                              p.difficulty, 
                              p.topic,
-                             c.starter_code as starterCode
+                             c.starter_code as starterCode,
+                             c.id as codeId
                           from problem p
                             JOIN code c
                           ON p.id = c.problem_id
@@ -43,8 +44,6 @@ router.get('/getProblemById/:id', (req, res) => {
 router.post('/userRun', (req,res) => {
   const body = req.body;
   console.log(body);
-  console.log("-----------------------");
-  console.log(body.userCode);
   res.status(200).json("Sample Vishay");
 })
 module.exports = router;

@@ -46,7 +46,8 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 				},
 				body : JSON.stringify({
 					userCode : userCode,
-					id : problem.id
+					id : problem.id,
+					codeId : problem.codeId
 				}),
 			})
 			.then(response => response.json())
