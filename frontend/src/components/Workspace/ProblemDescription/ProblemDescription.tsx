@@ -21,7 +21,7 @@ type ProblemDescriptionProps = {
 const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solved }) => {
 	const [problemDifficultyClass, setProblemDifficultyClass ] = useState("");
 	const [loading, setLoading ] = useState(false);
-	const topicArray = problem.topic.split(',').map(topic => topic.trim());
+	const topicArray = problem?.topic.split(',').map(topic => topic.trim());
 	const user = "";//useAuthState(auth);
 	//const { currentProblem, loading, problemDifficultyClass, setCurrentProblem } = useGetCurrentProblem(problem.id);
 	const { liked, disliked, solved, setData, starred } = useGetUsersDataOnProblem(problem.id);

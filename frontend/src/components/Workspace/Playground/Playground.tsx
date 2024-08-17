@@ -13,9 +13,6 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { java } from '@codemirror/lang-java';
 import { basicSetup } from '@codemirror/basic-setup';
 import MonacoEditor from "@monaco-editor/react";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/theme-github";
 
 type PlaygroundProps = {
 	problem: Problem;
