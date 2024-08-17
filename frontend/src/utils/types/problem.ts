@@ -9,14 +9,16 @@ export type Example = {
 // local problem data
 export type Problem = {
 	id: string;
-	title: string;
-	problemStatement: string;
+	name: string;
+	description: string;
+	difficulty:string,
 	examples: Example[];
-	constraints: string;
+	constraints: Record<string, string>;
 	order: number;
-	starterCode: string;
+	starterCode: Record<string, string>;
 	handlerFunction: ((fn: any) => boolean) | string;
 	starterFunctionName: string;
+	topic : string;
 };
 
 export type DBProblem = {

@@ -19,8 +19,18 @@ router.get('/getAll', (req, res) => {
 
 router.get('/getProblemById/:id', (req, res) => {
     const problemId = req.params.id;
-    const queryStr = 'select id, name as title, description as problemStatement , constraints as constraints from problem where id = ?';
-    console.log("inside the get Problem by id function");
+    const queryStr = `select p.id, 
+                             p.name, 
+                             p.description, 
+                             p.constraints,
+                             p.difficulty, 
+                             p.topic,
+                             c.starter_code as starterCode
+                          from problem p
+                            JOIN code c
+                          ON p.id = c.problem_id
+                            where p.id = ?`;
+
     connection.query(queryStr, [problemId], (err, results) => {
       if (err) {
         console.error('Error fetching data:', err.stack);
@@ -28,6 +38,13 @@ router.get('/getProblemById/:id', (req, res) => {
       }
       res.status(200).json(results);
     });
-  });
+});
 
+router.post('/userRun', (req,res) => {
+  const body = req.body;
+  console.log(body);
+  console.log("-----------------------");
+  console.log(body.userCode);
+  res.status(200).json("Sample Vishay");
+})
 module.exports = router;

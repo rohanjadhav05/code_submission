@@ -1,4 +1,3 @@
-import { auth } from "@/firebase/firebase";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -10,7 +9,6 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
 import Timer from "../Timer/Timer";
 import { useRouter } from "next/router";
-import { problems } from "@/utils/problems";
 import { Problem } from "@/utils/types/problem";
 
 type TopbarProps = {
@@ -24,22 +22,22 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
 	const router = useRouter();
 
 	const handleProblemChange = (isForward: boolean) => {
-		const { order } = problems[router.query.pid as string] as Problem;
-		const direction = isForward ? 1 : -1;
-		const nextProblemOrder = order + direction;
-		const nextProblemKey = Object.keys(problems).find((key) => problems[key].order === nextProblemOrder);
+		// const { order } = problems[router.query.pid as string] as Problem;
+		// const direction = isForward ? 1 : -1;
+		// const nextProblemOrder = order + direction;
+		// const nextProblemKey = Object.keys(problems).find((key) => problems[key].order === nextProblemOrder);
 
-		if (isForward && !nextProblemKey) {
-			const firstProblemKey = Object.keys(problems).find((key) => problems[key].order === 1);
-			router.push(`/problems/${firstProblemKey}`);
-		} else if (!isForward && !nextProblemKey) {
-			const lastProblemKey = Object.keys(problems).find(
-				(key) => problems[key].order === Object.keys(problems).length
-			);
-			router.push(`/problems/${lastProblemKey}`);
-		} else {
-			router.push(`/problems/${nextProblemKey}`);
-		}
+		// if (isForward && !nextProblemKey) {
+		// 	const firstProblemKey = Object.keys(problems).find((key) => problems[key].order === 1);
+		// 	router.push(`/problems/${firstProblemKey}`);
+		// } else if (!isForward && !nextProblemKey) {
+		// 	const lastProblemKey = Object.keys(problems).find(
+		// 		(key) => problems[key].order === Object.keys(problems).length
+		// 	);
+		// 	router.push(`/problems/${lastProblemKey}`);
+		// } else {
+		// 	router.push(`/problems/${nextProblemKey}`);
+		// }
 	};
 
 	return (
@@ -89,7 +87,7 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
 					{!user && (
 						<Link
 							href='/auth'
-							onClick={() => setAuthModalState((prev) => ({ ...prev, isOpen: true, type: "login" }))}
+							//onClick={() => setAuthModalState((prev) => ({ ...prev, isOpen: true, type: "login" }))}
 						>
 							<button className='bg-dark-fill-3 py-1 px-2 cursor-pointer rounded '>Sign In</button>
 						</Link>
@@ -103,7 +101,7 @@ const Topbar: React.FC<TopbarProps> = ({ problemPage }) => {
 								z-40 group-hover:scale-100 scale-0 
 								transition-all duration-300 ease-in-out'
 							>
-								<p className='text-sm'>{user.email}</p>
+								{/* <p className='text-sm'>{user.email}</p> */}
 							</div>
 						</div>
 					)}

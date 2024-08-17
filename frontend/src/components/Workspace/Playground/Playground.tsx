@@ -2,17 +2,20 @@ import { useState, useEffect } from "react";
 import PreferenceNav from "./PreferenceNav/PreferenceNav";
 import Split from "react-split";
 import CodeMirror from "@uiw/react-codemirror";
-import { vscodeDark } from "@uiw/codemirror-theme-vscode";
-import { javascript } from "@codemirror/lang-javascript";
 import EditorFooter from "./EditorFooter";
 import { Problem } from "@/utils/types/problem";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, firestore } from "@/firebase/firebase";
+//import { auth, firestore } from "@/firebase/firebase";
 import { toast } from "react-toastify";
-import { problems } from "@/utils/problems";
 import { useRouter } from "next/router";
 import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import { java } from '@codemirror/lang-java';
+import { basicSetup } from '@codemirror/basic-setup';
+import MonacoEditor from "@monaco-editor/react";
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-java";
+import "ace-builds/src-noconflict/theme-github";
 
 type PlaygroundProps = {
 	problem: Problem;
@@ -28,7 +31,7 @@ export interface ISettings {
 
 const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved }) => {
 	const [activeTestCaseId, setActiveTestCaseId] = useState<number>(0);
-	let [userCode, setUserCode] = useState<string>(problem.starterCode);
+	let [userCode, setUserCode] = useState<string>(problem.starterCode?.Java);
 
 	const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 
@@ -44,71 +47,89 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 	} = useRouter();
 
 	const handleSubmit = async () => {
-		if (!user) {
-			toast.error("Please login to submit your code", {
-				position: "top-center",
-				autoClose: 3000,
-				theme: "dark",
-			});
-			return;
-		}
+		// if (!user) {
+		// 	toast.error("Please login to submit your code", {
+		// 		position: "top-center",
+		// 		autoClose: 3000,
+		// 		theme: "dark",
+		// 	});
+		// 	return;
+		// }
 		try {
-			userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName));
-			const cb = new Function(`return ${userCode}`)();
-			const handler = problems[pid as string].handlerFunction;
+			console.log("user edit code : "+userCode);
+			fetch('http://localhost:4000/problems/userRun',{
+				method : 'POST',
+				headers : {
+					'Content-Type': 'application/json',
+				},
+				body : JSON.stringify({
+					userCode : userCode,
+					id : problem.id
+				}),
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success : ',data)
+			})
+			.catch(err => {
+				console.error('Error : ',err);
+			})
+			// userCode = userCode.slice(userCode.indexOf(problem.starterFunctionName));
+			// const cb = new Function(`return ${userCode}`)();
+			// const handler = problems[pid as string].handlerFunction;
 
-			if (typeof handler === "function") {
-				const success = handler(cb);
-				if (success) {
-					toast.success("Congrats! All tests passed!", {
-						position: "top-center",
-						autoClose: 3000,
-						theme: "dark",
-					});
-					setSuccess(true);
-					setTimeout(() => {
-						setSuccess(false);
-					}, 4000);
+			// if (typeof handler === "function") {
+			// 	const success = handler(cb);
+			// 	if (success) {
+			// 		toast.success("Congrats! All tests passed!", {
+			// 			position: "top-center",
+			// 			autoClose: 3000,
+			// 			theme: "dark",
+			// 		});
+			// 		setSuccess(true);
+			// 		setTimeout(() => {
+			// 			setSuccess(false);
+			// 		}, 4000);
 
-					const userRef = doc(firestore, "users", user.uid);
-					await updateDoc(userRef, {
-						solvedProblems: arrayUnion(pid),
-					});
-					setSolved(true);
-				}
-			}
+			// 		//const userRef = doc(firestore, "users", user.uid);
+			// 		// await updateDoc(userRef, {
+			// 		// 	solvedProblems: arrayUnion(pid),
+			// 		// });
+			// 		setSolved(true);
+			// 	}
+			// }
 		} catch (error: any) {
-			console.log(error.message);
-			if (
-				error.message.startsWith("AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:")
-			) {
-				toast.error("Oops! One or more test cases failed", {
-					position: "top-center",
-					autoClose: 3000,
-					theme: "dark",
-				});
-			} else {
-				toast.error(error.message, {
-					position: "top-center",
-					autoClose: 3000,
-					theme: "dark",
-				});
-			}
+			console.log("inside the catch");
+			// console.log(error.message);
+			// if (
+			// 	error.message.startsWith("AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:")
+			// ) {
+			// 	toast.error("Oops! One or more test cases failed", {
+			// 		position: "top-center",
+			// 		autoClose: 3000,
+			// 		theme: "dark",
+			// 	});
+			// } else {
+			// 	toast.error(error.message, {
+			// 		position: "top-center",
+			// 		autoClose: 3000,
+			// 		theme: "dark",
+			// 	});
+			// }
 		}
 	};
 
 	useEffect(() => {
 		const code = localStorage.getItem(`code-${pid}`);
-		if (user) {
-			setUserCode(code ? JSON.parse(code) : problem.starterCode);
-		} else {
-			setUserCode(problem.starterCode);
-		}
-	}, [pid, user, problem.starterCode]);
+		console.log("insde the useEffect of code : ");
+		setUserCode(problem.starterCode?.Java);
+	}, [pid,problem.starterCode]);
 
 	const onChange = (value: string) => {
-		setUserCode(value);
-		localStorage.setItem(`code-${pid}`, JSON.stringify(value));
+		if(value){
+			setUserCode(value);
+			localStorage.setItem(`code-${pid}`, JSON.stringify(value));
+		}
 	};
 
 	return (
@@ -117,13 +138,22 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 
 			<Split className='h-[calc(100vh-94px)]' direction='vertical' sizes={[60, 40]} minSize={60}>
 				<div className='w-full overflow-auto'>
-					<CodeMirror
-						value={userCode}
-						theme={vscodeDark}
-						onChange={onChange}
-						extensions={[javascript()]}
-						style={{ fontSize: settings.fontSize }}
+				<MonacoEditor
+					height="90vh"
+					language="java"
+					value={userCode}
+					onChange={onChange}
+					theme="vs-dark"
 					/>
+					 {/* <AceEditor
+						mode="java"
+						theme="dark"
+						name="editor"
+						editorProps={{ $blockScrolling: true }}
+						value={userCode}
+						onChange={(newValue) => setUserCode(newValue)}
+						setOptions={{ fontSize: settings.fontSize }}
+					  /> */}
 				</div>
 				<div className='w-full px-5 overflow-auto'>
 					{/* testcase heading */}
@@ -135,7 +165,7 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 					</div>
 
 					<div className='flex'>
-						{/* {problem.examples.map((example, index) => (
+						{/* { {problem.examples.map((example, index) => (
 							<div
 								className='mr-2 items-start mt-2 '
 								key={example.id}
@@ -151,7 +181,7 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 									</div>
 								</div>
 							</div>
-						))} */}
+						))} } */}
 					</div>
 
 					<div className='font-semibold my-4'>
