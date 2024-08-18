@@ -1,8 +1,6 @@
 import { authModalState } from "@/atoms/authModalAtom";
-import { auth } from "@/firebase/firebase";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { useSetRecoilState } from "recoil";
 import { toast } from "react-toastify";
 type LoginProps = {};
@@ -13,8 +11,9 @@ const Login: React.FC<LoginProps> = () => {
 		setAuthModalState((prev) => ({ ...prev, type }));
 	};
 	const [inputs, setInputs] = useState({ email: "", password: "" });
-	const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth);
 	const router = useRouter();
+	const [loading, setLoading] = useState(false);
+
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
@@ -23,17 +22,18 @@ const Login: React.FC<LoginProps> = () => {
 		e.preventDefault();
 		if (!inputs.email || !inputs.password) return alert("Please fill all fields");
 		try {
-			const newUser = await signInWithEmailAndPassword(inputs.email, inputs.password);
-			if (!newUser) return;
-			router.push("/");
+			// const newUser = await signInWithEmailAndPassword(inputs.email, inputs.password);
+			// if (!newUser) return;
+			// router.push("/");
 		} catch (error: any) {
-			toast.error(error.message, { position: "top-center", autoClose: 3000, theme: "dark" });
+			// toast.error(error.message, { position: "top-center", autoClose: 3000, theme: "dark" });
 		}
 	};
 
 	useEffect(() => {
-		if (error) toast.error(error.message, { position: "top-center", autoClose: 3000, theme: "dark" });
-	}, [error]);
+		//if (error) toast.error(error.message, { position: "top-center", autoClose: 3000, theme: "dark" });
+	}, //[error]
+	);
 	return (
 		<form className='space-y-6 px-6 pb-4' onSubmit={handleLogin}>
 			<h3 className='text-xl font-medium text-white'>Sign in to LeetClone</h3>

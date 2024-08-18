@@ -1,15 +1,11 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import Logout from "../Buttons/Logout";
-import { useSetRecoilState } from "recoil";
-import { authModalState } from "@/atoms/authModalAtom";
 import Image from "next/image";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { BsList } from "react-icons/bs";
 import Timer from "../Timer/Timer";
 import { useRouter } from "next/router";
-import { Problem } from "@/utils/types/problem";
 
 type TopbarProps = {
 	problemPage?: boolean;
