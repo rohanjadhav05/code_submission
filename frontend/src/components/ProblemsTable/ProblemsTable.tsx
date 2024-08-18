@@ -54,19 +54,19 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({ setLoadingProblems }) => 
 										className='hover:text-blue-600 cursor-pointer'
 										target='_blank'
 									>
-										{problem.title}
+										{problem.name}
 									</Link>
 								) : (
 									<Link
 										className='hover:text-blue-600 cursor-pointer'
 										href={`/problems/${problem.id}`}
 									>
-										{problem.title}
+										{problem.name}
 									</Link>
 								)}
 							</td>
 							<td className={`px-6 py-4 ${difficulyColor}`}>{problem.difficulty}</td>
-							<td className={"px-6 py-4"}>{problem.category}</td>
+							<td className={"px-6 py-4"}>{problem.topic}</td>
 							<td className={"px-6 py-4"}>
 								{problem.videoId ? (
 									<AiFillYoutube

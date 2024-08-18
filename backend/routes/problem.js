@@ -1,49 +1,16 @@
 // routes/problems.js
 const express = require('express');
 const router = express.Router();
-const connection = require('../src/db');
+const connection = require('../db/db');
+const problemController = require('../controller/problemController');
 
 
-// GET request to retrieve data from the problems table
-router.get('/getAll', (req, res) => {
-  const queryStr = 'select id, name as title, difficulty, topic as category from problem';
+// GET request to retrieve all problems from the problems table
+router.get('/getAll', problemController.getAll);
 
-  connection.query(queryStr, (err, results) => {
-    if (err) {
-      console.error('Error fetching data:', err.stack);
-      return res.status(500).json({ error: 'Database query error' });
-    }
-    res.status(200).json(results);
-  });
-});
+// GET request to retrieve problems by id from the problems table
+router.get('/getProblemById/:id', problemController.getProblem);
 
-router.get('/getProblemById/:id', (req, res) => {
-    const problemId = req.params.id;
-    const queryStr = `select p.id, 
-                             p.name, 
-                             p.description, 
-                             p.constraints,
-                             p.difficulty, 
-                             p.topic,
-                             c.starter_code as starterCode,
-                             c.id as codeId
-                          from problem p
-                            JOIN code c
-                          ON p.id = c.problem_id
-                            where p.id = ?`;
-
-    connection.query(queryStr, [problemId], (err, results) => {
-      if (err) {
-        console.error('Error fetching data:', err.stack);
-        return res.status(500).json({ error: 'Database query error' });
-      }
-      res.status(200).json(results);
-    });
-});
-
-router.post('/userRun', (req,res) => {
-  const body = req.body;
-  console.log(body);
-  res.status(200).json("Sample Vishay");
-})
+// POST method to run the code in container
+router.post('/userRun', problemController.runUserCode)
 module.exports = router;

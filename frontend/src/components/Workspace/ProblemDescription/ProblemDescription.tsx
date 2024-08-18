@@ -1,7 +1,7 @@
 import CircleSkeleton from "@/components/Skeletons/CircleSkeleton";
 import RectangleSkeleton from "@/components/Skeletons/RectangleSkeleton";
 //import { auth, firestore } from "@/firebase/firebase";
-import { DBProblem, Problem } from "@/utils/types/problem";
+import { DBProblem, Example, Problem } from "@/utils/types/problem";
 import { arrayRemove, arrayUnion, doc, getDoc, runTransaction, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 //import { useAuthState } from "react-firebase-hooks/auth";
@@ -21,6 +21,7 @@ type ProblemDescriptionProps = {
 const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solved }) => {
 	const [problemDifficultyClass, setProblemDifficultyClass ] = useState("");
 	const [loading, setLoading ] = useState(false);
+	const example : Example[] = problem.examples;
 	const topic = problem?.topic;
 	let topicArray = null;
 	if (topic){
@@ -43,10 +44,24 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solve
 				? "bg-dark-yellow text-dark-yellow"
 				: " bg-dark-pink text-dark-pink"
 		);
+		console.log(JSON.stringify(problem));
 	},[problem])
 
 	const toggleOpen = () => {
 		setIsOpen(prev => !prev);
+	};
+
+	const formatInputText = (inputText: Record<string, any[]>) => {
+		return Object.entries(inputText)
+				.map(([key, value]) => {
+					if (Array.isArray(value)) {
+						return `${key} = [${value.join(', ')}]`;
+					} else if (typeof value === 'string') {
+						return `${key} = "${value}"`;
+					}
+					return `${key} = ${value}`;
+				})
+				.join(', ');
 	};
 
 	const handleLike = async () => {
@@ -255,26 +270,34 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solve
 						</div>
 
 						{/* Examples */}
-						<div className='mt-4'>
-							{/* {problem.examples.map((example, index) => (
-								<div key={example.id}>
-									<p className='font-medium text-white '>Example {index + 1}: </p>
-									{example.img && <img src={example.img} alt='' className='mt-3' />}
+						<div >
+							{example.map((e, index) => (
+								<div className='mt-4 mb-4' key={e.id}>
+									<p className='font-medium text-white'>Example {index + 1} :</p>
+									{e.img && <img src={e.img} alt='' className='mt-3' />}
 									<div className='example-card'>
-										<pre>
-											<strong className='text-white'>Input: </strong> {example.inputText}
+										<div className="ml-5">
+											<strong className='text-white'>Input :  </strong> 
+												<span style={{ marginLeft: '0.5rem', color: '#A8A9A9' }}>
+													{formatInputText(e.inputText)}
+												</span>
 											<br />
-											<strong>Output:</strong>
-											{example.outputText} <br />
-											{example.explanation && (
+											<strong className='text-white'>Output :  </strong>
+												<span style={{color:'#A8A9A9'}}>{JSON.stringify(e.outputText)}</span> 
+											<br />
+											{e.explanation && (
 												<>
-													<strong>Explanation:</strong> {example.explanation}
+													<strong className='text-white'>Explanation :</strong>
+													<br /> 
+													<div className="mt-1" style={{color:'#A8A9A9'}}
+														dangerouslySetInnerHTML={{ __html: e.explanation }}
+													/>
 												</>
 											)}
-										</pre>
+										</div>
 									</div>
 								</div>
-							))} */}
+							))}
 						</div>
 
 						{/* Constraints */}
