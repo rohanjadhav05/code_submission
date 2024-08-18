@@ -6,9 +6,12 @@ import SettingsModal from "@/components/Modals/SettingsModal";
 type PreferenceNavProps = {
 	settings: ISettings;
 	setSettings: React.Dispatch<React.SetStateAction<ISettings>>;
+	languages: string[];
+	selectedLanguage: string;
+	onLanguageChange: (language: string) => void;
 };
 
-const PreferenceNav: React.FC<PreferenceNavProps> = ({ setSettings, settings }) => {
+const PreferenceNav: React.FC<PreferenceNavProps> = ({ setSettings, settings, languages, selectedLanguage, onLanguageChange}) => {
 	const [isFullScreen, setIsFullScreen] = useState(false);
 
 	const handleFullScreen = () => {
@@ -40,11 +43,17 @@ const PreferenceNav: React.FC<PreferenceNavProps> = ({ setSettings, settings }) 
 	return (
 		<div className='flex items-center justify-between bg-dark-layer-2 h-11 w-full '>
 			<div className='flex items-center text-white'>
-				<button className='flex cursor-pointer items-center rounded focus:outline-none bg-dark-fill-3 text-dark-label-2 hover:bg-dark-fill-2  px-2 py-1.5 font-medium'>
-					<div className='flex items-center px-1'>
-						<div className='text-xs text-label-2 dark:text-dark-label-2'>Java</div>
-					</div>
-				</button>
+				<select
+					value={selectedLanguage}
+					onChange={(e) => onLanguageChange(e.target.value)}
+					className='flex cursor-pointer items-center rounded focus:outline-none bg-dark-fill-3 text-dark-label-2 hover:bg-dark-fill-2 px-2 py-1.5 font-medium'
+				>
+					{languages.map(language => (
+						<option key={language} value={language}>
+							{language}
+						</option>
+					))}
+				</select>
 			</div>
 
 			<div className='flex items-center m-2'>
