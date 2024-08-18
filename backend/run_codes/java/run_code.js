@@ -1,6 +1,7 @@
 const Docker = require('dockerode');
 const path = require('path');
 const fs = require('fs');
+const readline = require('readline');
 const docker = new Docker();
 const express = require('express');
 
@@ -16,8 +17,8 @@ async function startContainer(imageName , max_memory_in_mb = 10) {
     OpenStdin: true,
     StdinOnce: true,
     HostConfig: {
-        StdinOpen: true,
-        Memory: max_memory_in_mb * 1024 * 1024, // Memory limit in bytes (e.g., 512MB)
+      StdinOpen: true,
+      Memory: max_memory_in_mb * 1024 * 1024, // Memory limit in bytes (e.g., 512MB)
       MemorySwap: -1, // Set to -1 for unlimited swap
       Binds: [
         `${path.resolve(__dirname, 'attach_volume')}:/usr/src/app` // Volume attachment
@@ -63,6 +64,23 @@ async function runCommandInContainer(container, command, timeout = 20) {
     
 }
 
+const get_user_output = async ()=>{
+    const filePath =  path.resolve(__dirname, 'attach_volume/output.text');
+    const rl = readline.createInterface({
+      input: fs.createReadStream(filePath),
+      crlfDelay: Infinity
+    });
+    
+    rl.once('line', (line) => {
+      console.log('First line:', line);
+      rl.close();
+    });
+}
+
+const is_output_match = (expected_output) =>{
+
+}
+
   
 async function runTestCases( testCases, max_memory_in_mb = 10 , testCaseTimeout = 20) {
     let container;
@@ -71,18 +89,17 @@ async function runTestCases( testCases, max_memory_in_mb = 10 , testCaseTimeout 
       container = await startContainer(imageName, max_memory_in_mb);
       const result = await runCommandInContainer(container, 'javac Main.java');
     
-      console.log('after compile')
       for (const testCase of testCases) {
         try{
             const result = await runCommandInContainer(container, `java Main`, testCaseTimeout); 
-            console.log("result:"+result)
+            
         }catch (error) {
-            console.error('Error occurred:', error.message);
+            return { status: 'run', error_type: 'run_time_error', error: error.message}
         }
       } 
   
     } catch (error) {
-      console.error('Error:', error);
+      return { status: 'error', error_type: 'compile_time_error', error: error.message}
     } finally {
       if (container) {
         // Clean up the container
