@@ -1,6 +1,7 @@
+
 export type Example = {
 	id: number;
-	inputText: string;
+	inputText: Record<string, any[]>;
 	outputText: string;
 	explanation?: string;
 	img?: string;
@@ -16,16 +17,14 @@ export type Problem = {
 	constraints: Record<string, string>;
 	order: number;
 	starterCode: Record<string, string>;
-	handlerFunction: ((fn: any) => boolean) | string;
-	starterFunctionName: string;
 	topic : string;
 	codeId : number;
 };
 
 export type DBProblem = {
 	id: string;
-	title: string;
-	category: string;
+	name: string;
+	topic: string;
 	difficulty: string;
 	likes: number;
 	dislikes: number;
