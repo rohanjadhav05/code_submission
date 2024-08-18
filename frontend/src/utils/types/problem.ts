@@ -16,7 +16,7 @@ export type Problem = {
 	examples: Example[];
 	constraints: Record<string, string>;
 	order: number;
-	starterCode: Record<string, string>;
+	starterCode: string;
 	topic : string;
 	codeId : number;
 };
