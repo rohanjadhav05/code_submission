@@ -7,6 +7,7 @@ const express = require('express');
 
 const filePath = path.resolve(__dirname, 'attach_volume/Main.java');
 const imageName = "java:3"
+const output_file_path = path.resolve(__dirname, 'attach_volume/output.txt');
 const basic_import = "import java.util.*;\nimport java.io.*;\n"
 
 async function startContainer(imageName , max_memory_in_mb = 10) {
@@ -30,11 +31,12 @@ async function startContainer(imageName , max_memory_in_mb = 10) {
   return container;
 }
 
-async function runCommandInContainer(container, command, timeout = 20) {
+async function runCommandInContainer(container, command, env_array=[], timeout = 20) {
     const exec = await container.exec({
       Cmd: ['bash', '-c', command],
       AttachStdout: true,
-      AttachStderr: true
+      AttachStderr: true,
+      Env: env_array
     });
     const stream =  await exec.start();
 
@@ -64,37 +66,48 @@ async function runCommandInContainer(container, command, timeout = 20) {
     
 }
 
-const get_user_output = async ()=>{
-    const filePath =  path.resolve(__dirname, 'attach_volume/output.text');
-    const rl = readline.createInterface({
-      input: fs.createReadStream(filePath),
-      crlfDelay: Infinity
-    });
-    
-    rl.once('line', (line) => {
-      console.log('First line:', line);
-      rl.close();
-    });
+const get_test_result = async ()=>{
+    return fs.readFileSync(output_file_path, 'utf8');
 }
 
-const is_output_match = (expected_output) =>{
-
+const  handleType = (value) => {
+    switch (typeof value) {
+       case 'object':
+            if (Array.isArray(value)) {
+               return value.join(",");
+            } else {
+               return value;
+            }
+        default:
+           return value
+    }
 }
 
-  
+const build_env_array = (testCase) =>{
+    return Object.entries(testCase.input).map(([key, value]) => `${key}=${handleType(value)}`);
+}
+
+const build_command_with_output = (testCase)=>{
+    outputs = testCase.output.map( val=> handleType(val)).join(" ");
+    return `java Main ${outputs}`
+}
+
 async function runTestCases( testCases, max_memory_in_mb = 10 , testCaseTimeout = 20) {
     let container;
   
     try {
       container = await startContainer(imageName, max_memory_in_mb);
-      const result = await runCommandInContainer(container, 'javac Main.java');
+      await runCommandInContainer(container, 'javac Main.java');
     
       for (const testCase of testCases) {
         try{
-            const result = await runCommandInContainer(container, `java Main`, testCaseTimeout); 
+            const output = await runCommandInContainer(container, build_command_with_output(testCase) , build_env_array(testCase),testCaseTimeout); 
+            const test_result = await get_test_result();
+            if( test_result.length > 0 )
+                return { status: 'error', error_type: 'output_mismatch', testCase: testCase, your_output: test_result }
             
         }catch (error) {
-            return { status: 'run', error_type: 'run_time_error', error: error.message}
+            return { status: 'error', error_type: 'run_time_error', error: error.message}
         }
       } 
   
@@ -107,10 +120,11 @@ async function runTestCases( testCases, max_memory_in_mb = 10 , testCaseTimeout 
         await container.remove();
       }
     }
+    return { status: 'sucess'}
 }
 
 const write_code_in_file = (content)=>{
-    console.log(filePath)
+   
     fs.truncate(filePath, 0, (err) => {
         if (err) {
           console.error('Error truncating file:', err);
@@ -126,19 +140,22 @@ const write_code_in_file = (content)=>{
           });
         }
       });
+
+    fs.truncate(output_file_path, 0, (err) => {
+      if (err) {
+        console.error('Error truncating output file:', err);
+      }
+    })
       
 }
 
 const run_java_code = async (base_code, function_code, testCases, max_memory = 50, max_timeout = 20) => {
     const content = basic_import + function_code + base_code;
-    console.log(content)
-    console.log(testCases)
-    console.log(max_memory)
-    console.log(max_timeout)
-    // write_code_in_file(content)
-    // const result = await runTestCases(testCases, max_memory, max_timeout);
-    
-    return "result";
+    write_code_in_file(content)
+    const result = await runTestCases(testCases, max_memory, max_timeout);
+    console.log("result")
+    console.log(result)
+    return result;
 }
   
 
