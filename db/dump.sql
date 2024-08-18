@@ -82,12 +82,14 @@ DROP TABLE IF EXISTS `testcase`;
 CREATE TABLE `testcase` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `problem_id` int DEFAULT NULL,
-  `testcase` json NOT NULL,
-  `explanation` json DEFAULT NULL,
+  `input` json NOT NULL,
+  `explanation` varchar(5000) DEFAULT NULL,
+  `output` json DEFAULT NULL,
+  `isVisible` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `problem_id` (`problem_id`),
   CONSTRAINT `testcase_ibfk_1` FOREIGN KEY (`problem_id`) REFERENCES `problem` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,6 +98,7 @@ CREATE TABLE `testcase` (
 
 LOCK TABLES `testcase` WRITE;
 /*!40000 ALTER TABLE `testcase` DISABLE KEYS */;
+INSERT INTO `testcase` VALUES (1,1,'{\"bills\": [5, 5, 5, 10, 20]}','<p>From the first 3 customers, we collect three $5 bills in order.</p>\n     <p>From the fourth customer, we collect a $10 bill and give back a $5.</p>\n     <p>From the fifth customer, we give a $10 bill and a $5 bill.</p>\n     <p>Since all customers got correct change, we output <strong>true</strong>.</p>','true',1),(2,1,'{\"bills\": [5, 5, 10, 10, 20]}','<p>From the first two customers in order, we collect two $5 bills.</p>\n     <p>For the next two customers in order, we collect a $10 bill and give back a $5 bill.</p>\n     <p>For the last customer, we can not give the change of $15 back because we only have two $10 bills.</p>\n     <p>Since not every customer received the correct change, the answer is <strong>false</strong>.</p>','false',1);
 /*!40000 ALTER TABLE `testcase` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -108,4 +111,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-17 22:07:45
+-- Dump completed on 2024-08-18 14:36:29
