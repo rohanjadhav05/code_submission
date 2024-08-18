@@ -131,8 +131,12 @@ const write_code_in_file = (content)=>{
 
 const run_java_code = async (base_code, function_code, testCases, max_memory = 50, max_timeout = 20) => {
     const content = basic_import + function_code + base_code;
-    write_code_in_file(content)
-    const result = await runTestCases(testCases, max_memory, max_timeout);
+    console.log(content)
+    console.log(testCases)
+    console.log(max_memory)
+    console.log(max_timeout)
+    // write_code_in_file(content)
+    // const result = await runTestCases(testCases, max_memory, max_timeout);
     
     return result;
 }

@@ -51,7 +51,52 @@ const getProblemById = (problemId) => {
     });
 };
 
+const base_code_with_laonguage  = async (code_id) => {
+  return new Promise((resolve, reject) => {
+      const queryStr = `select base_code, language from code where id=${code_id}`;
+
+      connection.query(queryStr, (err, results) => {
+          if(err){
+              return reject(err);
+          }
+          resolve(results[0]);
+      })
+  })
+
+
+}
+
+const max_time_and_memory  = async (problem_id) => {
+  return new Promise((resolve, reject) => {
+      const queryStr = `select max_memory, timeout_sec from problem where id=${problem_id}`;
+
+      connection.query(queryStr, (err, results) => {
+          if(err){
+              return reject(err);
+          }
+          resolve(results[0]);
+      })
+  })
+}
+
+const get_test_cases = async (problem_id) => {
+  return new Promise((resolve, reject) => {
+      const queryStr = `select input, output from testcase where problem_id=${problem_id}`;
+
+      connection.query(queryStr, (err, results) => {
+          if(err){
+              return reject(err);
+          }
+          resolve(results);
+      })
+  })
+}
+
+
 module.exports = {
     getProblemList,
     getProblemById,
+    base_code_with_laonguage,
+    max_time_and_memory,
+    get_test_cases
 }

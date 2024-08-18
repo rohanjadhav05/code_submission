@@ -21,7 +21,8 @@ export interface ISettings {
 }
 
 const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved }) => {
-	let [userCode, setUserCode] = useState<string>(problem.starterCode?.Java);
+	console.log(problem)
+	let [userCode, setUserCode] = useState<string>(problem.starterCode);
 
 	const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 
@@ -65,7 +66,7 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 	useEffect(() => {
 		const code = localStorage.getItem(`code-${pid}`);
 		console.log("insde the useEffect of code : ");
-		setUserCode(problem.starterCode?.Java);
+		setUserCode(problem.starterCode);
 	}, [pid,problem.starterCode]);
 
 	const onChange = (value: string) => {
