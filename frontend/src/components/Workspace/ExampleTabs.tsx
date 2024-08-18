@@ -1,10 +1,6 @@
 import { Example } from '@/utils/types/problem';
 import React, { useState } from 'react';
 
-type InputText = {
-  [key: string]: any;
-};
-
 
 type ExampleComponentProps = {
   examples: Example[];
@@ -12,7 +8,6 @@ type ExampleComponentProps = {
 
 const ExampleTabs: React.FC<ExampleComponentProps> = ({ examples }) => {
   const [activeTab, setActiveTab] = useState(0);
-
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
@@ -43,17 +38,17 @@ const ExampleTabs: React.FC<ExampleComponentProps> = ({ examples }) => {
           style={{ display: activeTab === index ? 'block' : 'none' }}
           className="mt-4"
         >
-          <div className="font-medium text-white">Input :</div>
+          <div className="font-medium" style={{color : "#A8A9A9"}}>Input :</div>
           {Object.entries(example.inputText).map(([key, value]) => (
             <div key={key} className="mt-2">
-              <p className='text-white'>{key} : </p>
+              <p style={{color : "#A8A9A9"}}>{key} = </p>
               <div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'>
                 {Array.isArray(value) ? `[${value.join(', ')}]` : value}
               </div>
             </div>
           ))}
           <br />
-          <div className="font-medium text-white">Output:</div>
+          <div className="font-medium" style={{color : "#A8A9A9"}}>Output = </div>
           <div
             className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'
             style={{ color: '#A8A9A9' }}

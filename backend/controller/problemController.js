@@ -1,5 +1,5 @@
 const { run_java_code } = require('../run_codes/java/run_code');
-const {getProblemList, getProblemById, base_code_with_laonguage, max_time_and_memory, get_test_cases} = require('../service/problemService');
+const {getProblemList, getProblemById, base_code_with_laonguage, max_time_and_memory, get_test_cases, getBaseCode, getLanguageCollection} = require('../service/problemService');
 
 const getAll = async (req, res) => {
     try{
@@ -24,6 +24,20 @@ const getProblem = async (req, res) => {
     }
 }
 
+const getBaseCodeByLanguage = async (req, res) => {
+    const {id, language} = req.query;
+
+    try{
+        const code = await getBaseCode(id, language);
+        res.status(200).json(code);
+    }
+    catch(err){
+        console.error('Error Fetching data : ', err.stack);
+        res.status(500).json({ error: 'Database query error' });
+    }
+
+}
+
 const runUserCode = async(req, res) => {
     const problem_id = req.body.id;
     const codeId = req.body.codeId;
@@ -37,8 +51,22 @@ const runUserCode = async(req, res) => {
     res.status(200).json(result);
 }
 
+const languageCollection = async(req,res) => {
+    const id = req.params.id;
+
+    try{
+        const code = await getLanguageCollection(id);
+        res.status(200).json(code);
+    }
+    catch(err){
+        console.error('Error Fetching data : ', err.stack);
+        res.status(500).json({ error: 'Database query error' });
+    }
+}
 module.exports = {
     getProblem,
     getAll,
     runUserCode,
+    getBaseCodeByLanguage,
+    languageCollection,
 }

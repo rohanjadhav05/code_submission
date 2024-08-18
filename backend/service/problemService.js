@@ -62,8 +62,30 @@ const base_code_with_laonguage  = async (code_id) => {
           resolve(results[0]);
       })
   })
+}
 
+const getLanguageCollection = async (id) => {
+  return new Promise((resolve, reject) => {
+    const queryStr = `select language from code where problem_id = ?`;
+    connection.query(queryStr, id, (err, results) => {
+      if(err){
+        return reject(err);
+      }
+      resolve(results);
+    })
+  }) 
+}
 
+const getBaseCode = async (id, language) => {
+  return new Promise((resolve, reject) => {
+    const queryStr = `select starter_code from code where problem_id = ? and language = ?`;
+    connection.query(queryStr, [id, language], (err, results) => {
+      if(err){
+        return reject(err);
+      }
+      resolve(results[0]);
+    })
+  })
 }
 
 const max_time_and_memory  = async (problem_id) => {
@@ -98,5 +120,7 @@ module.exports = {
     getProblemById,
     base_code_with_laonguage,
     max_time_and_memory,
-    get_test_cases
+    get_test_cases,
+    getBaseCode,
+    getLanguageCollection,
 }

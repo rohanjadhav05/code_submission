@@ -20,15 +20,16 @@ export interface ISettings {
 	settingsModalIsOpen: boolean;
 	dropdownIsOpen: boolean;
 }
-type InputText = {
-	[key: string]: any;
-};
+
+interface LanguageData {
+    language: string;
+}
 
 const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved }) => {
-	console.log(problem)
 	let [userCode, setUserCode] = useState<string>(problem.starterCode);
-
 	const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
+	const [languages, setLanguages] = useState([]);
+	const [selectedLanguage, setSelectedLanguage] = useState('');
 
 	const [settings, setSettings] = useState<ISettings>({
 		fontSize: fontSize,
@@ -68,10 +69,39 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 	};
 
 	useEffect(() => {
-		const code = localStorage.getItem(`code-${pid}`);
-		console.log("insde the useEffect of code : ");
-		setUserCode(problem.starterCode);
-	}, [pid,problem.starterCode]);
+		const fetchBaseCode = async () => {
+			try {
+				const response = await fetch(`http://localhost:4000/problems/getBaseCode?language=${selectedLanguage}&id=${problem.id}`);
+				const data = await response.json();
+				setUserCode(data.starter_code);
+				console.log("User Code : ",userCode);
+			} catch (error) {
+				console.error('Error fetching base code:', error);
+			}
+		};
+		fetchBaseCode();
+	}, [selectedLanguage]);
+
+
+	useEffect(() => {
+        const fetchLanguages = async () => {
+            try {
+                const response = await fetch(`http://localhost:4000/problems/lang/${problem.id}`);
+                const data = await response.json();
+				
+				const languageList = data.map((item: LanguageData) => item.language);
+                setLanguages(languageList);
+                if (languageList.length > 0) {
+                    setSelectedLanguage(languageList[0]);
+                }
+            } catch (error) {
+                console.error('Error fetching languages:', error);
+            }
+        };
+
+        fetchLanguages();
+    }, []);
+
 
 	const onChange = (value: string) => {
 		if(value){
@@ -80,26 +110,20 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 		}
 	};
 
-	const renderInputText = (inputText : InputText ) => {
-		return Object.entries(inputText).map(([key, value]) => (
-			<div key={key} className='mt-2'>
-				<strong className='text-white'>{key}:</strong>
-				<div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'>
-					{Array.isArray(value) ? `[${value.join(', ')}]` : value}
-				</div>
-			</div>
-		));
-	};
+	const handleLanguageChange = (newLanguage : string) => {
+        setSelectedLanguage(newLanguage);
+        // Additional logic to fetch base code for the selected language
+    };
 
 	return (
 		<div className='flex flex-col bg-dark-layer-1 relative overflow-x-hidden'>
-			<PreferenceNav settings={settings} setSettings={setSettings} />
+			<PreferenceNav settings={settings} setSettings={setSettings} languages={languages} selectedLanguage={selectedLanguage} onLanguageChange={handleLanguageChange}/>
 
 			<Split className='h-[calc(100vh-94px)]' direction='vertical' sizes={[60, 40]} minSize={60}>
 				<div className='w-full overflow-auto'>
 				<MonacoEditor
 					height="90vh"
-					language="java"
+					language={selectedLanguage}
 					value={userCode}
 					onChange={onChange}
 					theme="vs-dark"
@@ -113,11 +137,6 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 							<div className='text-sm font-medium leading-5 text-white'>Testcases</div>
 							<hr className='absolute bottom-0 h-0.5 w-full rounded-full border-none bg-white' />
 						</div>
-					</div>
-
-					{/* hita TestCases dakycha ahet */}
-					<div className='flex'>
-						
 					</div>
 
 					<div className='font-semibold my-4'>
