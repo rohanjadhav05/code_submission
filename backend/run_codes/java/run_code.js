@@ -138,7 +138,7 @@ const run_java_code = async (base_code, function_code, testCases, max_memory = 5
     // write_code_in_file(content)
     // const result = await runTestCases(testCases, max_memory, max_timeout);
     
-    return result;
+    return "result";
 }
   
 

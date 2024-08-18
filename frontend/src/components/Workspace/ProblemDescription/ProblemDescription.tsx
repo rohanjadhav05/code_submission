@@ -32,7 +32,7 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solve
 	//const { liked, disliked, solved, setData, starred } = useGetUsersDataOnProblem(problem.id);
 	const [updating, setUpdating] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
-
+	console.log(JSON.stringify(problem));
 	useEffect(()=> {
 		if(!problem){
 			setLoading(true);
@@ -44,7 +44,6 @@ const ProblemDescription: React.FC<ProblemDescriptionProps> = ({ problem, _solve
 				? "bg-dark-yellow text-dark-yellow"
 				: " bg-dark-pink text-dark-pink"
 		);
-		console.log(JSON.stringify(problem));
 	},[problem])
 
 	const toggleOpen = () => {
