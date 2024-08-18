@@ -6,6 +6,7 @@ import { Problem } from "@/utils/types/problem";
 import { useRouter } from "next/router";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import MonacoEditor from "@monaco-editor/react";
+import ExampleTabs from "../ExampleTabs";
 
 
 type PlaygroundProps = {
@@ -19,6 +20,9 @@ export interface ISettings {
 	settingsModalIsOpen: boolean;
 	dropdownIsOpen: boolean;
 }
+type InputText = {
+	[key: string]: any;
+};
 
 const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved }) => {
 	let [userCode, setUserCode] = useState<string>(problem.starterCode?.Java);
@@ -75,6 +79,17 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 		}
 	};
 
+	const renderInputText = (inputText : InputText ) => {
+		return Object.entries(inputText).map(([key, value]) => (
+			<div key={key} className='mt-2'>
+				<strong className='text-white'>{key}:</strong>
+				<div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'>
+					{Array.isArray(value) ? `[${value.join(', ')}]` : value}
+				</div>
+			</div>
+		));
+	};
+
 	return (
 		<div className='flex flex-col bg-dark-layer-1 relative overflow-x-hidden'>
 			<PreferenceNav settings={settings} setSettings={setSettings} />
@@ -105,14 +120,7 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 					</div>
 
 					<div className='font-semibold my-4'>
-						<p className='text-sm font-medium mt-4 text-white'>Input:</p>
-						<div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2'>
-							 {/*problem.examples[activeTestCaseId].inputText*/}
-						</div>
-						<p className='text-sm font-medium mt-4 text-white'>Output:</p>
-						<div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2'>
-							{/*problem.examples[activeTestCaseId].outputText*/}
-						</div>
+						<ExampleTabs examples={problem.examples} />
 					</div>
 				</div>
 			</Split>

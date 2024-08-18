@@ -106,3 +106,8 @@ code {
 	color: white;
 	font-size: 1rem;
 }
+
+.example-tabs-container {
+	max-height: 200px; /* Adjust this height based on your design */
+	overflow-y: auto;
+  }
