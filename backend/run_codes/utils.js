@@ -108,6 +108,16 @@ const build_command_with_output = (testCase, base_run_command)=>{
     return `${base_run_command} ${outputs}`
 }
 
+const cleanup = async (container) =>{
+      await container.stop();
+      await container.remove();
+}
+
+const cleanup_error =  (message) =>{
+  let cleanedResult = message.replace(/[\x00-\x1F\x7F-\x9F]+/g, '');
+  return cleanedResult.trim();
+}
+
 async function runTestCases( imageName, testCases, container_attach_path, output_file_path, compile_command,  base_run_command,max_memory_in_mb = 10 , testCaseTimeout = 20) {
     let container;
   
@@ -119,27 +129,27 @@ async function runTestCases( imageName, testCases, container_attach_path, output
       for (const testCase of testCases) {
         try{
             const output = await runCommandInContainer(container, build_command_with_output(testCase, base_run_command), build_env_array(testCase),testCaseTimeout); 
-            console.log("output:"+output)
             const test_result = await get_test_result(output_file_path);
             if( test_result.length > 0 )
                 return { status: 'error', error_type: 'output_mismatch', testCase: testCase, your_output: test_result }
             
         }catch (error) {
-            return { status: 'error', error_type: 'run_time_error', error: error.message}
+            
+            return { status: 'error', error_type: 'run_time_error', error: cleanup_error(error.message)}
         }
       } 
   
     } catch (error) {
-      return { status: 'error', error_type: 'compile_time_error', error: error.message}
+      return { status: 'error', error_type: 'compile_time_error', error: cleanup_error(error.message)}
     } finally {
       if (container) {
-        // Clean up the container
-        await container.stop();
-        await container.remove();
+        cleanup(container)
       }
     }
     return { status: 'sucess'}
 }
+
+
 
 
 module.exports = {
