@@ -30,6 +30,7 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 	const [fontSize, setFontSize] = useLocalStorage("lcc-fontSize", "16px");
 	const [languages, setLanguages] = useState([]);
 	const [selectedLanguage, setSelectedLanguage] = useState('');
+	const [codeId, setCodeId] = useState(0);
 
 	const [settings, setSettings] = useState<ISettings>({
 		fontSize: fontSize,
@@ -53,7 +54,7 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 				body : JSON.stringify({
 					userCode : userCode,
 					id : problem.id,
-					codeId : problem.codeId
+					codeId : codeId
 				}),
 			})
 			.then(response => response.json())
@@ -67,21 +68,6 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 			console.log("inside the catch");
 		}
 	};
-
-	useEffect(() => {
-		const fetchBaseCode = async () => {
-			try {
-				const response = await fetch(`http://localhost:4000/problems/getBaseCode?language=${selectedLanguage}&id=${problem.id}`);
-				const data = await response.json();
-				setUserCode(data.starter_code);
-				console.log("User Code : ",userCode);
-			} catch (error) {
-				console.error('Error fetching base code:', error);
-			}
-		};
-		fetchBaseCode();
-	}, [selectedLanguage]);
-
 
 	useEffect(() => {
         const fetchLanguages = async () => {
@@ -102,6 +88,20 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
         fetchLanguages();
     }, []);
 
+	useEffect(() => {
+		const fetchBaseCode = async () => {
+			try {
+				const response = await fetch(`http://localhost:4000/problems/getBaseCode?language=${selectedLanguage}&id=${problem.id}`);
+				const data = await response.json();
+				setUserCode(data.starter_code);
+				setCodeId(data.codeId);
+				console.log("User Code : ",userCode+" code : "+codeId);
+			} catch (error) {
+				console.error('Error fetching base code:', error);
+			}
+		};
+		fetchBaseCode();
+	}, [selectedLanguage]);
 
 	const onChange = (value: string) => {
 		if(value){

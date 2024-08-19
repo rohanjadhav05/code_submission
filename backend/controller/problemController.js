@@ -46,6 +46,7 @@ const runUserCode = async(req, res) => {
     const { max_memory, timeout_sec} = await max_time_and_memory(problem_id)
     const test_cases = await get_test_cases(problem_id)
     let result = {}
+    console.log("code Id : "+codeId);
     if(language == 'java')
       result = await run_java_code(base_code, userCode, test_cases, max_memory, timeout_sec)
     res.status(200).json(result);

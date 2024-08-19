@@ -7,12 +7,67 @@ type ExampleComponentProps = {
 };
 
 const ExampleTabs: React.FC<ExampleComponentProps> = ({ examples }) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [testCase1, setTestCase1] = useState<Record<string, any>>(examples[0].inputText);
+  const [testCase2, setTestCase2] = useState<Record<string, any>>(examples[1].inputText);
+  const [activeTab, setActiveTab] = useState<number>(0); // 0 for Case 1, 1 for Case 2
+  const [isEdited1, setisEdited1] = useState<Boolean>(false);
+  const [isEdited2, setisEdited2] = useState<Boolean>(false);
+
+  console.log("Test Case 1 : "+examples[0].outputText);
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };
 
-  return (
+  const handleInputChange = (key: string, value: string): void => {
+    if (activeTab === 0) {
+      // Update state for Test Case 1
+      setisEdited1(true);
+      setTestCase1((prevTestCase) => {
+        let updatedValue: any[];
+        const currentValue = prevTestCase[key];
+
+        if (Array.isArray(currentValue)) {
+          updatedValue = value
+            .slice(1, -1) // Remove brackets
+            .split(',')  // Split by comma
+            .map(item => item.trim()); // Trim spaces
+        } else {
+          updatedValue = [value];
+        }
+
+        return {
+          ...prevTestCase,
+          [key]: updatedValue,
+        };
+      });
+    } else if (activeTab === 1) {
+      // Update state for Test Case 2
+      setisEdited2(true);
+      setTestCase2((prevTestCase) => {
+        let updatedValue: any[];
+        const currentValue = prevTestCase[key];
+
+        if (Array.isArray(currentValue)) {
+          updatedValue = value
+            .slice(1, -1) // Remove brackets
+            .split(',')  // Split by comma
+            .map(item => item.trim()); // Trim spaces
+        } else {
+          updatedValue = [value];
+        }
+
+        return {
+          ...prevTestCase,
+          [key]: updatedValue,
+        };
+      });
+    }
+  };
+
+   // Select the active test case based on the tab
+   const activeTestCase = activeTab === 0 ? testCase1 : testCase2;
+
+   return (
     <div className='example-tabs-container'>
       {/* Tab Headers */}
       <div className="flex">
@@ -32,31 +87,68 @@ const ExampleTabs: React.FC<ExampleComponentProps> = ({ examples }) => {
       </div>
 
       {/* Tab Content */}
-      {examples.map((example, index) => (
+      <div className="mt-4 overflow-auto">
         <div
-          key={index}
-          style={{ display: activeTab === index ? 'block' : 'none' }}
+          style={{ display: activeTab === 0 ? 'block' : 'none' }}
           className="mt-4"
         >
-          <div className="font-medium" style={{color : "#A8A9A9"}}>Input :</div>
-          {Object.entries(example.inputText).map(([key, value]) => (
+          <div className="font-medium" style={{ color: "#A8A9A9" }}>Input :</div>
+          {Object.entries(testCase1).map(([key, value]) => (
             <div key={key} className="mt-2">
-              <p style={{color : "#A8A9A9"}}>{key} = </p>
-              <div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'>
-                {Array.isArray(value) ? `[${value.join(', ')}]` : value}
-              </div>
+              <p style={{ color: "#A8A9A9" }}>{key} = </p>
+              <textarea
+                className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'
+                value={Array.isArray(value) ? `[ ${value.join(', ')} ]` : value}
+                onChange={(e) => handleInputChange(key, e.target.value)}
+              />
             </div>
           ))}
           <br />
-          <div className="font-medium" style={{color : "#A8A9A9"}}>Output = </div>
-          <div
-            className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'
-            style={{ color: '#A8A9A9' }}
-          >
-            {JSON.stringify(example.outputText)}
-          </div>
+          { !isEdited1 && ( 
+              <>
+                <div className="font-medium" style={{ color: "#A8A9A9" }}>Output = </div>
+                <div
+                  className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'
+                  style={{ color: '#A8A9A9' }}
+                >
+                  { JSON.stringify(examples[0].outputText) }
+                </div>
+              </>
+            )
+          }
+          
         </div>
-      ))}
+        <div
+          style={{ display: activeTab === 1 ? 'block' : 'none' }}
+          className="mt-4"
+        >
+          <div className="font-medium" style={{ color: "#A8A9A9" }}>Input :</div>
+          {Object.entries(testCase2).map(([key, value]) => (
+            <div key={key} className="mt-2">
+              <p style={{ color: "#A8A9A9" }}>{key} = </p>
+              <textarea
+                className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'
+                value={Array.isArray(value) ? `[ ${value.join(', ')} ]` : value}
+                onChange={(e) => handleInputChange(key, e.target.value)}
+              />
+            </div>
+          ))}
+          <br />
+          {
+            !isEdited2 && (
+              <>
+                <div className="font-medium" style={{ color: "#A8A9A9" }}>Output = </div>
+                  <div
+                    className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-1'
+                    style={{ color: '#A8A9A9' }}
+                  >
+                    { JSON.stringify(examples[1].outputText) }
+                  </div>
+              </>
+            )
+          }
+        </div>
+      </div>
     </div>
   );
 };

@@ -108,6 +108,6 @@ code {
 }
 
 .example-tabs-container {
-	max-height: 200px; /* Adjust this height based on your design */
+	padding-bottom: 50px;
 	overflow-y: auto;
   }
