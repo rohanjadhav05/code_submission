@@ -1,11 +1,12 @@
 import java.util.*;
 import java.io.*;
 class Solution {
-    public boolean lemonadeChange(int[] bills) {
-      System.out.println(Arrays.toString(bills));
-       return false;
-    } 
-}class Main {
+public:
+    bool lemonadeChange(vector<int>& bills) {
+        // write the code here
+        return true; 
+    }
+};class Main {
     public static void main(String[] args){
         
         String bills_str = System.getenv("bills");
