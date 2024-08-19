@@ -26,12 +26,12 @@ CREATE TABLE `code` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `problem_id` int DEFAULT NULL,
   `starter_code` json DEFAULT NULL,
-  `base_code` json DEFAULT NULL,
+  `base_code` varchar(4000) DEFAULT NULL,
   `language` enum('cpp','java','javascript','c#','python') DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `problem_id` (`problem_id`),
   CONSTRAINT `code_ibfk_1` FOREIGN KEY (`problem_id`) REFERENCES `problem` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `code` (
 
 LOCK TABLES `code` WRITE;
 /*!40000 ALTER TABLE `code` DISABLE KEYS */;
-INSERT INTO `code` VALUES (1,1,'\"class Solution {\\n    public boolean lemonadeChange(int[] bills) {\\n        // Your implementation here \\n    } \\n}\"','\"public class Main { public static void main(String[] args) {Solution s = new Solution();int[] bills = new int[args.length];for (int i = 0; i < args.length; i++) { bills[i] = Integer.parseInt(args[i]);} boolean result = s.lemonadeChange(bills); try (BufferedWriter writer = new BufferedWriter(new FileWriter(\\\\\\\"output.txt\\\\\\\"))) { writer.write(Boolean.toString(result)); } catch (IOException e) {System.out.println(\\\\\\\"An error occurred while writing to the file.\\\\\\\");         e.printStackTrace();    }    }}\"','java');
+INSERT INTO `code` VALUES (1,1,'\"class Solution {\\n    public boolean lemonadeChange(int[] bills) {\\n        // Your implementation here \\n    } \\n}\"','class Main {\n    public static void main(String[] args){\n        \n        String bills_str = System.getenv(\"bills\");\n        String[] bills_str_arr = bills_str.split(\",\");\n        int[] bills = new int[bills_str_arr.length];\n        for(int i=0;i<bills.length;i++)\n          bills[i] = Integer.parseInt(bills_str_arr[i]);\n        Solution s = new Solution();\n        boolean result = s.lemonadeChange(bills);\n        boolean expected_result = Boolean. parseBoolean(args[0]);\n        if(expected_result != result){\n          try (BufferedWriter writer = new BufferedWriter(new FileWriter(\"output.txt\"))) { \n            writer.write(Boolean.toString(result)); \n          } catch (IOException e) {\n            System.out.println(\"An error occurred while writing to the file.\");        \n            e.printStackTrace();    \n          } \n        }\n        \n    }\n}','java'),(2,1,'\"class Solution {\\npublic:\\n    bool lemonadeChange(vector<int>& bills) {\\n        // write the code here\\n        return true; \\n    }\\n};\"','int main(int argc, char* argv[]) {\n    \n    string str = getenv(\"bills\");\n\n    vector<int> bills;\n    stringstream ss(str);\n    string item;\n\n    while (getline(ss, item, \',\')) {\n        bills.push_back(stoi(item));\n    }\n\n    bool expected_result = (string(argv[1]) == \"true\");\n\n    Solution s;\n    bool result = s.lemonadeChange(bills);\n\n    if (expected_result != result) {\n        ofstream outfile(\"output.txt\");\n        outfile << boolalpha << result;\n    }\n     return 0;\n}\n','cpp');
 /*!40000 ALTER TABLE `code` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -101,8 +101,67 @@ CREATE TABLE `testcase` (
 
 LOCK TABLES `testcase` WRITE;
 /*!40000 ALTER TABLE `testcase` DISABLE KEYS */;
-INSERT INTO `testcase` VALUES (1,1,'{\"bills\": [5, 5, 5, 10, 20]}','<p>From the first 3 customers, we collect three $5 bills in order.</p>\n     <p>From the fourth customer, we collect a $10 bill and give back a $5.</p>\n     <p>From the fifth customer, we give a $10 bill and a $5 bill.</p>\n     <p>Since all customers got correct change, we output <strong>true</strong>.</p>','true',1),(2,1,'{\"bills\": [5, 5, 10, 10, 20]}','<p>From the first two customers in order, we collect two $5 bills.</p>\n     <p>For the next two customers in order, we collect a $10 bill and give back a $5 bill.</p>\n     <p>For the last customer, we can not give the change of $15 back because we only have two $10 bills.</p>\n     <p>Since not every customer received the correct change, the answer is <strong>false</strong>.</p>','false',1);
+INSERT INTO `testcase` VALUES (1,1,'{\"bills\": [5, 5, 5, 10, 20]}','<p>From the first 3 customers, we collect three $5 bills in order.</p>\n     <p>From the fourth customer, we collect a $10 bill and give back a $5.</p>\n     <p>From the fifth customer, we give a $10 bill and a $5 bill.</p>\n     <p>Since all customers got correct change, we output <strong>true</strong>.</p>','[false]',1),(2,1,'{\"bills\": [5, 5, 10, 10, 20]}','<p>From the first two customers in order, we collect two $5 bills.</p>\n     <p>For the next two customers in order, we collect a $10 bill and give back a $5 bill.</p>\n     <p>For the last customer, we can not give the change of $15 back because we only have two $10 bills.</p>\n     <p>Since not every customer received the correct change, the answer is <strong>false</strong>.</p>','[false]',1);
 /*!40000 ALTER TABLE `testcase` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_solutions`
+--
+
+DROP TABLE IF EXISTS `user_solutions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_solutions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `problem_id` int DEFAULT NULL,
+  `lanugages` enum('cpp','java','javascript','c#','python') DEFAULT NULL,
+  `solution` text,
+  `submit_time` timestamp NULL DEFAULT NULL,
+  `score` float DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `problem_id` (`problem_id`),
+  CONSTRAINT `user_solutions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `user_solutions_ibfk_2` FOREIGN KEY (`problem_id`) REFERENCES `problem` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_solutions`
+--
+
+LOCK TABLES `user_solutions` WRITE;
+/*!40000 ALTER TABLE `user_solutions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_solutions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) DEFAULT NULL,
+  `email` varchar(500) DEFAULT NULL,
+  `password` varchar(300) DEFAULT NULL,
+  `current_level` int DEFAULT NULL,
+  `avatar_url` varchar(1000) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -114,4 +173,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-18 20:05:27
+-- Dump completed on 2024-08-19 19:40:16
