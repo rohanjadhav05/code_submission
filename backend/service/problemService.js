@@ -21,26 +21,20 @@ const getProblemList = () => {
 
 const getProblemById = (problemId) => {
     return new Promise((resolve, reject) => {
-      const queryStr = `select p.id, 
-                               p.name, 
+      const queryStr = `select  distinct p.id, 
+							                p.name, 
                                p.description, 
                                p.constraints,
                                p.difficulty, 
                                p.topic,
-                               c.starter_code as starterCode,
-                               c.id as codeId,
-                               t.isVisible,
-                               t.input,
+							                  t.input,
                                t.output,
-                               t.explanation,
-                               t.id as testCaseId
+                               t.explanation
                             from problem p
-                                JOIN code c
-                              ON p.id = c.problem_id
                                 JOIN testcase t
                               ON p.id = t.problem_id
                                   where p.id = ?
-                                    and t.isVisible = 1`;
+                                  and isVisible = 1;`;
   
       connection.query(queryStr, [problemId], (err, results) => {
         if (err) {
@@ -78,7 +72,7 @@ const getLanguageCollection = async (id) => {
 
 const getBaseCode = async (id, language) => {
   return new Promise((resolve, reject) => {
-    const queryStr = `select starter_code from code where problem_id = ? and language = ?`;
+    const queryStr = `select starter_code, id as codeId  from code where problem_id = ? and language = ?`;
     connection.query(queryStr, [id, language], (err, results) => {
       if(err){
         return reject(err);

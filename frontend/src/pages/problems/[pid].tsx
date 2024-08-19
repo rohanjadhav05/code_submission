@@ -22,6 +22,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ }) => {
 				const response = await fetch(`http://localhost:4000/problems/getProblemById/${pid}`);
 				if (response.ok) {
 					const data = await response.json();
+
 					const examples: Example[] = data.map((row: any, index: number) => ({
 						id: index, // You can use the index as id, or row.id if it exists
 						inputText: row.input, 
@@ -34,13 +35,11 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ }) => {
 						description : data[0].description,
 						constraints : data[0].constraints,
 						difficulty : data[0].difficulty,
+						topic : data[0].topic,
 						examples,
 						starterCode : data[0].starterCode,
-						order : 1,
-						topic : data[0].topic,
-						codeId : data[0].codeId,
 					}
-
+					console.log(JSON.stringify(problem));
 					setProblem(problemData);
 				} else {
 					setError('Problem not found');
