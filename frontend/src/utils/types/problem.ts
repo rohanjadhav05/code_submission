@@ -15,10 +15,8 @@ export type Problem = {
 	difficulty:string,
 	examples: Example[];
 	constraints: Record<string, string>;
-	order: number;
 	starterCode: string;
 	topic : string;
-	codeId : number;
 };
 
 export type DBProblem = {
