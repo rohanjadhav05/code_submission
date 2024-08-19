@@ -43,7 +43,7 @@ const runUserCode = async(req, res) => {
     const problem_id = req.body.id;
     const codeId = req.body.codeId;
     const userCode = req.body.userCode;
-    const { language, base_code} = await base_code_with_laonguage(2)
+    const { language, base_code} = await base_code_with_laonguage(codeId)
     const { max_memory, timeout_sec} = await max_time_and_memory(problem_id)
     const test_cases = await get_test_cases(problem_id)
     let result = {}
