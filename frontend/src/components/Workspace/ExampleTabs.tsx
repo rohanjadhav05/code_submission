@@ -4,16 +4,20 @@ import React, { useState } from 'react';
 
 type ExampleComponentProps = {
   examples: Example[];
+  testCase1: Record<string, any>;
+  testCase2: Record<string, any>;
+  setTestCase1: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  setTestCase2: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+
 };
 
-const ExampleTabs: React.FC<ExampleComponentProps> = ({ examples }) => {
-  const [testCase1, setTestCase1] = useState<Record<string, any>>(examples[0].inputText);
-  const [testCase2, setTestCase2] = useState<Record<string, any>>(examples[1].inputText);
+
+const ExampleTabs: React.FC<ExampleComponentProps> = ({ examples, testCase1, testCase2, setTestCase1, setTestCase2 }) => {
+  
   const [activeTab, setActiveTab] = useState<number>(0); // 0 for Case 1, 1 for Case 2
   const [isEdited1, setisEdited1] = useState<Boolean>(false);
   const [isEdited2, setisEdited2] = useState<Boolean>(false);
 
-  console.log("Test Case 1 : "+examples[0].outputText);
   const handleTabClick = (index: number) => {
     setActiveTab(index);
   };

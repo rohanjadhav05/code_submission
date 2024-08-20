@@ -11,7 +11,9 @@ router.get('/getAll', problemController.getAll);
 router.get('/getProblemById/:id', problemController.getProblem);
 
 // POST method to run the code in container
-router.post('/userRun', problemController.runUserCode)
+router.post('/userRun', problemController.runUserCode);
+
+router.post('/userSubmit', problemController.submitUserCode);
 
 // POST method to get baseCode by laguage
 router.get("/getBaseCode", problemController.getBaseCodeByLanguage);

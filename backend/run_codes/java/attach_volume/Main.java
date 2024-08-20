@@ -2,11 +2,10 @@ import java.util.*;
 import java.io.*;
 class Solution {
     public boolean lemonadeChange(int[] bills) {
-       
+        // Your implementation here 
     } 
-}class Main {
-    public static void main(String[] args){
-        
+}public class Main { 
+    public static void main(String[] args) {
         String bills_str = System.getenv("bills");
         String[] bills_str_arr = bills_str.split(",");
         int[] bills = new int[bills_str_arr.length];
@@ -23,6 +22,6 @@ class Solution {
             e.printStackTrace();    
           } 
         }
-        
+
     }
 }
