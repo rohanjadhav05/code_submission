@@ -31,6 +31,8 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 	const [languages, setLanguages] = useState([]);
 	const [selectedLanguage, setSelectedLanguage] = useState('');
 	const [codeId, setCodeId] = useState(0);
+	const [testCase1, setTestCase1] = useState<Record<string, any>>(problem.examples[0].inputText);
+    const [testCase2, setTestCase2] = useState<Record<string, any>>(problem.examples[1].inputText);
 
 	const [settings, setSettings] = useState<ISettings>({
 		fontSize: fontSize,
@@ -45,7 +47,6 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 
 	const handleRun = async () => {
 		try {
-			console.log("TestCase 1 : "+JSON.stringify(testCase1));
 			fetch('http://localhost:4000/problems/userRun',{
 				method : 'POST',
 				headers : {
@@ -73,7 +74,6 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 
 	const handleSubmit = async () => {
 		try {
-			console.log("TestCase 1 : "+JSON.stringify(testCase1));
 			fetch('http://localhost:4000/problems/userSumbit',{
 				method : 'POST',
 				headers : {
@@ -116,20 +116,6 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
         fetchLanguages();
     }, []);
 
-	useEffect(() => {
-		const fetchBaseCode = async () => {
-			try {
-				const response = await fetch(`http://localhost:4000/problems/getBaseCode?language=${selectedLanguage}&id=${problem.id}`);
-				const data = await response.json();
-				setUserCode(data.starter_code);
-				setCodeId(data.codeId);
-				console.log("User Code : ",userCode+" code : "+codeId);
-			} catch (error) {
-				console.error('Error fetching base code:', error);
-			}
-		};
-		fetchBaseCode();
-	}, [selectedLanguage]);
 	useEffect(() => {
 		const fetchBaseCode = async () => {
 			try {
