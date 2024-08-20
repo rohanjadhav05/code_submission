@@ -31,6 +31,9 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 	const [languages, setLanguages] = useState([]);
 	const [selectedLanguage, setSelectedLanguage] = useState('');
 	const [codeId, setCodeId] = useState(0);
+	const [testCase1, setTestCase1] = useState<Record<string, any>>(problem.examples[0].inputText);
+    const [testCase2, setTestCase2] = useState<Record<string, any>>(problem.examples[1].inputText);
+
 
 	const [settings, setSettings] = useState<ISettings>({
 		fontSize: fontSize,
@@ -43,10 +46,38 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 		query: { pid },
 	} = useRouter();
 
+	const handleRun = async () => {
+		try {
+			console.log("TestCase 1 : "+JSON.stringify(testCase1));
+			fetch('http://localhost:4000/problems/userRun',{
+				method : 'POST',
+				headers : {
+					'Content-Type': 'application/json',
+				},
+				body : JSON.stringify({
+					userCode : userCode,
+					id : problem.id,
+					codeId : codeId,
+					testCase1 : testCase1,
+					testCase2 : testCase2
+				}),
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Success : ',data)
+			})
+			.catch(err => {
+				console.error('Error : ',err);
+			})
+		} catch (error: any) {
+			console.log("inside the catch");
+		}
+	};
+
 	const handleSubmit = async () => {
 		try {
-			console.log("user edit code : "+userCode);
-			fetch('http://localhost:4000/problems/userRun',{
+			console.log("TestCase 1 : "+JSON.stringify(testCase1));
+			fetch('http://localhost:4000/problems/userSumbit',{
 				method : 'POST',
 				headers : {
 					'Content-Type': 'application/json',
@@ -140,11 +171,16 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 					</div>
 
 					<div className='font-semibold my-4'>
-						<ExampleTabs examples={problem.examples} />
+						<ExampleTabs 
+									examples={problem.examples}
+									testCase1 ={testCase1}
+									testCase2 = {testCase2} 
+									setTestCase1 = {setTestCase1}
+									setTestCase2 = {setTestCase2} />
 					</div>
 				</div>
 			</Split>
-			<EditorFooter handleSubmit={handleSubmit} />
+			<EditorFooter handleRun={handleRun} handleSubmit={handleSubmit} />
 		</div>
 	);
 };
