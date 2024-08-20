@@ -11,6 +11,7 @@ type ExampleComponentProps = {
 
 };
 
+
 const ExampleTabs: React.FC<ExampleComponentProps> = ({ examples, testCase1, testCase2, setTestCase1, setTestCase2 }) => {
   
   const [activeTab, setActiveTab] = useState<number>(0); // 0 for Case 1, 1 for Case 2

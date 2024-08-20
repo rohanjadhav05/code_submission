@@ -31,8 +31,9 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 	const [languages, setLanguages] = useState([]);
 	const [selectedLanguage, setSelectedLanguage] = useState('');
 	const [codeId, setCodeId] = useState(0);
-	const [testCase1, setTestCase1] = useState<Record<string, any>>(problem.examples[0].inputText);
-    const [testCase2, setTestCase2] = useState<Record<string, any>>(problem.examples[1].inputText);
+  const [testCase1, setTestCase1] = useState<Record<string, any>>(problem.examples[0].inputText);
+  const [testCase2, setTestCase2] = useState<Record<string, any>>(problem.examples[1].inputText);
+
 
 	const [settings, setSettings] = useState<ISettings>({
 		fontSize: fontSize,
