@@ -17,6 +17,7 @@ const getProblem = async (req, res) => {
     const problemId = req.params.id;
     try{
         const results = await getProblemById(problemId);
+        console.log(results)
        res.status(200).json(results);
     }
     catch(err){
@@ -51,10 +52,11 @@ const runUserCode = async(req, res) => {
     const { language, base_code} = await base_code_with_laonguage(codeId)
     const { max_memory, timeout_sec} = await max_time_and_memory(problem_id)
     let result = {}
+
     if(language == 'java')
-      result = await run_java_code(base_code, userCode, /* hita testCase pass karycha test_cases */ max_memory, timeout_sec)
+      result = await run_java_code(base_code, userCode, [testCase1, testCase2], max_memory, timeout_sec)
     else if(language=="cpp")
-      result = await run_cpp_code(base_code, userCode,/* test_cases */ max_memory, timeout_sec)
+      result = await run_cpp_code(base_code, userCode, [testCase1, testCase2], max_memory, timeout_sec)
     res.status(200).json(result);
 }
 
@@ -66,7 +68,6 @@ const submitUserCode = async(req, res) => {
     const { max_memory, timeout_sec} = await max_time_and_memory(problem_id)
     const test_cases = await get_test_cases(problem_id)
     let result = {}
-    console.log("code Id : "+codeId);
     if(language == 'java')
       result = await run_java_code(base_code, userCode, test_cases, max_memory, timeout_sec)
     else if(language=="cpp")

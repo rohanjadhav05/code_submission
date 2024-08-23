@@ -57,8 +57,8 @@ const Playground: React.FC<PlaygroundProps> = ({ problem, setSuccess, setSolved 
 					userCode : userCode,
 					id : problem.id,
 					codeId : codeId,
-					testCase1 : testCase1,
-					testCase2 : testCase2
+					testCase1 : {input: testCase1,output: problem.examples[0].outputText},
+					testCase2 : { input: testCase2, output: problem.examples[1].outputText}
 				}),
 			})
 			.then(response => response.json())
